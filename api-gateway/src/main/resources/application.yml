@@ -1,0 +1,89 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  # ===========================================
+  # Gateway Route Configuration
+  # ===========================================
+  # Each route maps a URL path prefix to a downstream service.
+  # The gateway uses Eureka (lb://) for load-balanced routing.
+  # StripPrefix removes the routing prefix before forwarding.
+  cloud:
+    gateway:
+      # Global default filters applied to ALL routes
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+
+      routes:
+        # ---- User Service ----
+        - id: user-service-auth
+          uri: lb://user-service
+          predicates:
+            - Path=/api/auth/**
+
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+
+        # ---- Product Service ----
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/products/**
+
+        - id: category-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/categories/**
+
+        # ---- Order Service ----
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+
+        # ---- Payment Service ----
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/api/payments/**
+
+        # ---- Inventory Service ----
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path=/api/inventory/**
+
+        # ---- Service Discovery Dashboard ----
+        - id: eureka-dashboard
+          uri: http://localhost:8761
+          predicates:
+            - Path=/eureka/web
+          filters:
+            - SetPath=/
+
+# Eureka Client
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.payment.gateway: DEBUG
+    org.springframework.cloud.gateway: INFO

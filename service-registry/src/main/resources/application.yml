@@ -1,0 +1,22 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: service-registry
+
+# Eureka Server Configuration
+# This IS the registry — it should NOT try to register itself or fetch from others
+eureka:
+  client:
+    register-with-eureka: false       # Don't register this server as a client
+    fetch-registry: false             # Don't try to fetch registry from another server
+  server:
+    enable-self-preservation: false   # Disable for dev (in prod, keep enabled)
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.netflix.eureka: WARN          # Reduce noisy Eureka logs
+    com.netflix.discovery: WARN
