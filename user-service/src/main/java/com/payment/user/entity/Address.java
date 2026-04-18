@@ -38,7 +38,7 @@ public class Address {
     private String country;
 
     /** Whether this is the user's primary/default address */
-    @Column(nullable = false)
+    @Column(name = "is_primary", nullable = false)
     @Builder.Default
     private boolean primary = false;
 
